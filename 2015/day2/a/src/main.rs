@@ -3,8 +3,6 @@ use std::io::{BufRead, BufReader};
 
 fn main() {
     let mut total : i32 = 0;
-    let input = File::open("input.txt").unwrap();
-    let reader = BufReader::new(input);
     
     for line in reader.lines() {
         let line = line.unwrap();

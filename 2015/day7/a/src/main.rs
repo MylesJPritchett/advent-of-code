@@ -5,23 +5,38 @@ use regex::Captures;
 use std::collections::HashMap;
 
 fn main() {
-    
+    //read file
     let input = File::open("../input.txt").unwrap();
     let reader = BufReader::new(input);
 
+    //ugly regex, but it does exactly what I want it to
     let re = Regex::new(r"(?:(^[[:lower:]]+|^\d+) |)(?:([[:lower:]]+|[[:upper:]]+) |)(?:([[:lower:]]+|[[:upper:]]+|\d+|) |)-> ([[:lower:]]+)$").unwrap();
     
-    let mut signals: HashMap<String, Captures> = HashMap::new();
-    //let mut cache = HashMap::new();
+    //hashmap to store the 'instructions' which is the regex groups, with the key of group 4
+    let mut instructions : HashMap<&str, Vec<&str>> = HashMap::new();
 
-    for line in reader.lines() {
-        
-        let line: String = line.unwrap();
-        let cap: Captures = re.captures(line).expect(&format!("invalid input: {}", line));
-        signals.insert(cap[4].to_string(), cap);
+    for line in reader.lines().into_iter() {
+
+        let line = line.unwrap();
+        println!("Line Read: {}", line);
+
+        for caps in re.captures_iter(line){ //this line is where I am having touble, with or without the '&' before line, I get a different error
+
+            let groups: Vec<&str> = caps.iter()
+                .map(|m| match m {
+                    Some(value) => value.as_str(),
+                    None => ""
+                })
+            .collect();
+
+            println!("{:?}", groups); //this prints exactly what I want
+
+            instructions.insert(groups[4], groups); //this line is the one that causes the error, because of a reference outside the loop?
+        }
     }
-    
 }
+
+//let mut signals: HashMap<String, i32> = HashMap::new();
 
 // fn get_val(signals: &HashMap<String, Captures>, cache: &mut HashMap<String, u16>, s: &String) -> u16 {
 //     if cache.contains_key(s) {
